@@ -1,12 +1,18 @@
+import { createRequire } from 'node:module'
 import { Command } from 'commander'
 import { GitError } from './modules/git/helpers.js'
 import { registerGitCommands } from './modules/git/index.js'
+
+const require = createRequire(import.meta.url)
+const { version } = require('../package.json') as { version: string }
 
 const program = new Command()
 
 program
   .name('nomadutil')
   .description('Local utilities for git ship/release workflows')
+  .version(version, '-V, --version', 'Show version number')
+  .helpOption('-h, --help', 'Show usage')
   .showHelpAfterError()
   .showSuggestionAfterError(false)
 

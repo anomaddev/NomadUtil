@@ -46,6 +46,22 @@ npm publish --access public
 
 Always operates on the **current working directory’s** git repository (not the tool install path).
 
+### Help and version
+
+```bash
+nomadutil --help          # or -h
+nomadutil --version       # or -V
+nomadutil git --help
+nomadutil git ship --help
+```
+
+| Flag | Description |
+|------|-------------|
+| `-h, --help` | Show usage (works at any command level) |
+| `-V, --version` | Print the installed package version |
+
+Running `nomadutil` with no arguments also prints help (and exits non-zero).
+
 ### Ship
 
 Stage all changes, commit if anything is staged, push the branch:
@@ -66,12 +82,13 @@ nomadutil git release v1.0.0   # same tag as 1.0.0 → v1.0.0
 
 ### Flags
 
+Shared by `git ship` and `git release`:
+
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--remote <name>` | `origin` | Git remote |
 | `--branch <name>` | `main` | Branch to push |
 | `--dry-run` | off | Print what would run; no git writes |
-| `-h, --help` | | Show usage |
 
 Examples:
 
