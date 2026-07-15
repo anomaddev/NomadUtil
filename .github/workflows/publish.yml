@@ -1,6 +1,6 @@
 # Publishes nomadutil to npm via OIDC Trusted Publishing (no npm token secret).
 #
-# Triggers on a pushed tag matching v*.*.* (e.g. after `nomadutil git release 1.0.2`).
+# Triggers on a pushed tag matching v*.*.* (e.g. after `nomadutil git release 1.0.4`).
 #
 # One-time setup on npmjs.com:
 # 1. Package → Access → Trusted Publishers → GitHub Actions
