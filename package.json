@@ -16,7 +16,9 @@
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -26,9 +28,22 @@
     "git",
     "cli",
     "ship",
-    "release"
+    "release",
+    "tag"
   ],
+  "author": "anomaddev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anomaddev/NomadUtil.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anomaddev/NomadUtil/issues"
+  },
+  "homepage": "https://github.com/anomaddev/NomadUtil#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18"
   },

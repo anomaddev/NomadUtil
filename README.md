@@ -6,26 +6,30 @@ Commands are grouped under modules so more tools can be added later. v1 ships th
 
 ## Install
 
-From this repo (local development):
+Global CLI:
+
+```bash
+npm install -g nomadutil
+```
+
+As a library dependency:
+
+```bash
+npm install nomadutil
+```
+
+One-off without installing:
+
+```bash
+npx nomadutil git ship "fix login crash"
+```
+
+### Local development
 
 ```bash
 npm install
 npm run build
 npm link          # or: npm i -g .
-```
-
-From another project via the package (once published, or via a local path):
-
-```bash
-npm install nomadutil
-# or during development:
-npm install /path/to/nomadutil
-```
-
-One-off without a global install:
-
-```bash
-npx nomadutil git ship "fix login crash"
 ```
 
 ## CLI
