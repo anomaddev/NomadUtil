@@ -1,0 +1,57 @@
+{
+  "name": "nomadutil",
+  "version": "1.0.0",
+  "description": "CLI + library for local Git ship/release workflows",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "nomadutil": "./bin/nomadutil.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "git",
+    "cli",
+    "ship",
+    "release",
+    "tag"
+  ],
+  "author": "anomaddev",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anomaddev/NomadUtil.git"
+  },
+  "bugs": {
+    "url": "https://github.com/anomaddev/NomadUtil/issues"
+  },
+  "homepage": "https://github.com/anomaddev/NomadUtil#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  }
+}
