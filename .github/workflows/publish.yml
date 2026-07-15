@@ -1,6 +1,6 @@
 # Publishes nomadutil to npm via OIDC Trusted Publishing (no npm token secret).
 #
-# Triggers on a pushed tag matching v*.*.* (e.g. after `nomadutil git release 1.0.5`).
+# Triggers on a pushed tag matching v*.*.* (e.g. after `nomadutil git release 1.0.6`).
 #
 # One-time setup on npmjs.com:
 # 1. Package → Access → Trusted Publishers → GitHub Actions
@@ -9,6 +9,9 @@
 # 4. Workflow filename: publish.yml
 # 5. Environment: (leave blank)
 # 6. Allowed actions: npm publish
+#
+# Note: --provenance requires a public GitHub repo. This repo is private, so
+# provenance is omitted. Trusted Publishing (OIDC) still works.
 
 name: Publish to npm
 
@@ -26,13 +29,12 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '22'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false
 
       - name: Upgrade npm for trusted publishing
         run: npm install -g npm@latest
@@ -50,5 +52,4 @@ jobs:
           fi
 
       - name: Publish
-        # Provenance only works in CI (GitHub OIDC); do not set publishConfig.provenance
-        run: npm publish --access public --provenance
+        run: npm publish --access public
