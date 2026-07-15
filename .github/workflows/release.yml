@@ -1,5 +1,5 @@
 # Creates a GitHub Release when a version tag is pushed
-# (e.g. after `nomadutil git release 1.0.6`).
+# (e.g. after `nomadutil git release 1.0.7`).
 #
 # Runs alongside publish.yml on the same tag push.
 

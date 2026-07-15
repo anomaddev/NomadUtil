@@ -34,7 +34,7 @@ npm link          # or: npm i -g .
 
 ### Publish to npm
 
-Publishing and GitHub Releases are automated via GitHub Actions when you push a version tag (`v*.*.*`). The tag version must match `package.json` (as with `nomadutil git release 1.0.6` after bumping the package version).
+Publishing and GitHub Releases are automated via GitHub Actions when you push a version tag (`v*.*.*`). The tag version must match `package.json` (as with `nomadutil git release 1.0.7` after bumping the package version).
 
 **One-time setup** — configure [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) on npmjs.com (no `NPM_TOKEN` secret):
 
@@ -46,10 +46,10 @@ Then release:
 
 ```bash
 # bump "version" in package.json first, commit, then:
-nomadutil git release 1.0.6
+nomadutil git release 1.0.7
 ```
 
-That pushes tag `v1.0.6`, which runs:
+That pushes tag `v1.0.7`, which runs:
 
 - [.github/workflows/release.yml](.github/workflows/release.yml) — creates a GitHub Release (with generated notes)
 - [.github/workflows/publish.yml](.github/workflows/publish.yml) — publishes to npm via Trusted Publishing (OIDC)
