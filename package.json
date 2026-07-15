@@ -42,7 +42,8 @@
   },
   "homepage": "https://github.com/anomaddev/NomadUtil#readme",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "engines": {
     "node": ">=18"

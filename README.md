@@ -34,6 +34,25 @@ npm link          # or: npm i -g .
 
 ### Publish to npm
 
+Publishing is automated via GitHub Actions when you push a version tag (`v*.*.*`). The tag version must match `package.json` (as with `nomadutil git release 1.0.2` after bumping the package version).
+
+**One-time setup** — configure [Trusted Publishing](https://docs.npmjs.com/trusted-publishers/) on npmjs.com (no `NPM_TOKEN` secret):
+
+1. Open the package → **Access** → **Trusted Publishers** → **GitHub Actions**
+2. Set owner `anomaddev`, repository `NomadUtil`, workflow filename `publish.yml`
+3. Leave **Environment** blank; allow **npm publish**
+
+Then release:
+
+```bash
+# bump "version" in package.json first, commit, then:
+nomadutil git release 1.0.2
+```
+
+That pushes tag `v1.0.2`, which runs [.github/workflows/publish.yml](.github/workflows/publish.yml) and publishes to npm with provenance.
+
+Manual publish (local):
+
 ```bash
 npm install          # required — installs typescript for the build step
 npm login
