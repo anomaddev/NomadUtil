@@ -21,8 +21,8 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build"
+    "build": "node ./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "prepublishOnly": "node ./scripts/ensure-dev-deps.js && npm run build"
   },
   "keywords": [
     "git",
