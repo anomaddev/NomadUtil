@@ -1,4 +1,7 @@
 import { spawn } from 'node:child_process'
+import { readFile, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { createInterface } from 'node:readline'
 
 export type GitRunOptions = {
   cwd?: string
@@ -183,4 +186,135 @@ export function normalizeVersion(version: string): string {
 
 export function versionToTag(version: string): string {
   return `v${normalizeVersion(version)}`
+}
+
+async function promptYesNo(question: string): Promise<boolean> {
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    return false
+  }
+
+  const rl = createInterface({ input: process.stdin, output: process.stdout })
+  try {
+    const answer = await new Promise<string>((resolve) => {
+      rl.question(question, resolve)
+    })
+    return /^(y|yes)$/i.test(answer.trim())
+  } finally {
+    rl.close()
+  }
+}
+
+async function writePackageVersion(
+  expected: string,
+  cwd: string,
+  dryRun: boolean,
+): Promise<void> {
+  const pkgPath = join(cwd, 'package.json')
+  const raw = await readFile(pkgPath, 'utf8')
+  const pkg = JSON.parse(raw) as Record<string, unknown>
+  pkg.version = expected
+
+  if (dryRun) {
+    console.log(`[dry-run] would write ${pkgPath} version ${expected}`)
+  } else {
+    await writeFile(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`, 'utf8')
+  }
+
+  const lockPath = join(cwd, 'package-lock.json')
+  let lockRaw: string
+  try {
+    lockRaw = await readFile(lockPath, 'utf8')
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+      return
+    }
+    throw err
+  }
+
+  const lock = JSON.parse(lockRaw) as {
+    version?: string
+    packages?: Record<string, { version?: string } & Record<string, unknown>>
+  }
+  lock.version = expected
+  if (lock.packages?.['']) {
+    lock.packages[''].version = expected
+  }
+
+  if (dryRun) {
+    console.log(`[dry-run] would write ${lockPath} version ${expected}`)
+  } else {
+    await writeFile(lockPath, `${JSON.stringify(lock, null, 2)}\n`, 'utf8')
+  }
+}
+
+export type EnsurePackageVersionOptions = {
+  cwd?: string
+  dryRun?: boolean
+  /** Skip the prompt and update package version automatically. */
+  update?: boolean
+}
+
+/**
+ * When package.json exists, require its version to match the release version
+ * before any commit/tag. On mismatch, offer to update and continue.
+ * Skipped if there is no package.json (non-npm repos).
+ */
+export async function ensurePackageVersionMatches(
+  expectedVersion: string,
+  options: EnsurePackageVersionOptions = {},
+): Promise<void> {
+  const cwd = options.cwd ?? process.cwd()
+  const dryRun = options.dryRun ?? false
+  const update = options.update ?? false
+
+  const pkgPath = join(cwd, 'package.json')
+  let raw: string
+  try {
+    raw = await readFile(pkgPath, 'utf8')
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+      return
+    }
+    throw err
+  }
+
+  let pkg: { version?: unknown }
+  try {
+    pkg = JSON.parse(raw) as { version?: unknown }
+  } catch {
+    throw new GitError(`invalid package.json: ${pkgPath}`)
+  }
+
+  if (typeof pkg.version !== 'string' || !pkg.version.trim()) {
+    throw new GitError(`package.json has no version field: ${pkgPath}`)
+  }
+
+  const actual = normalizeVersion(pkg.version.trim())
+  const expected = normalizeVersion(expectedVersion)
+  if (actual === expected) {
+    return
+  }
+
+  console.error(
+    `package.json version (${actual}) does not match release version (${expected}).`,
+  )
+
+  const shouldUpdate =
+    update ||
+    (await promptYesNo(
+      `Update package.json (and package-lock.json if present) to ${expected} and continue? [y/N] `,
+    ))
+
+  if (!shouldUpdate) {
+    throw new GitError(
+      `Aborted. Bump "version" in package.json to ${expected} and try again.`,
+    )
+  }
+
+  await writePackageVersion(expected, cwd, dryRun)
+  console.log(
+    dryRun
+      ? `Would update package version ${actual} → ${expected}`
+      : `Updated package version ${actual} → ${expected}`,
+  )
 }

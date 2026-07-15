@@ -1,6 +1,7 @@
 import {
   addAll,
   assertGitRepo,
+  ensurePackageVersionMatches,
   commitIfNeeded,
   createAnnotatedTag,
   normalizeVersion,
@@ -16,6 +17,8 @@ export type ReleaseOptions = {
   remote?: string
   branch?: string
   dryRun?: boolean
+  /** Auto-update package.json on version mismatch (skip prompt). */
+  updatePackageVersion?: boolean
 }
 
 export async function release(options: ReleaseOptions): Promise<void> {
@@ -33,6 +36,11 @@ export async function release(options: ReleaseOptions): Promise<void> {
   const message = options.message?.trim() || `Release ${tag}`
 
   await assertGitRepo(cwd)
+  await ensurePackageVersionMatches(version, {
+    cwd,
+    dryRun,
+    update: options.updatePackageVersion,
+  })
   await addAll(cwd, dryRun)
   await commitIfNeeded(message, cwd, dryRun)
   await createAnnotatedTag(tag, message, cwd, dryRun)

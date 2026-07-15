@@ -12,6 +12,10 @@ type SharedOpts = {
   dryRun?: boolean
 }
 
+type ReleaseOpts = SharedOpts & {
+  yes?: boolean
+}
+
 function sharedFlags(cmd: Command): Command {
   return cmd
     .option('--remote <name>', 'git remote', 'origin')
@@ -42,16 +46,24 @@ export function registerGitCommands(program: Command): void {
   sharedFlags(
     git
       .command('release')
-      .description('Stage, commit (if needed), tag, and push branch + tag')
+      .description(
+        'Stage, commit (if needed), tag, and push branch + tag (checks package.json version)',
+      )
       .argument('<version>', 'version (e.g. 1.0.0 or v1.0.0)')
       .argument('[message]', 'tag/commit message (default: Release vX.Y.Z)')
-      .action(async (version: string, message: string | undefined, opts: SharedOpts) => {
+      .option(
+        '-y, --yes',
+        'on package.json mismatch, update version without prompting',
+        false,
+      )
+      .action(async (version: string, message: string | undefined, opts: ReleaseOpts) => {
         await release({
           version,
           message,
           remote: opts.remote,
           branch: opts.branch,
           dryRun: opts.dryRun,
+          updatePackageVersion: opts.yes,
         })
       }),
   )
