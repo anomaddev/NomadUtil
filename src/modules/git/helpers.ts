@@ -127,15 +127,23 @@ export async function commitIfNeeded(
   cwd: string = process.cwd(),
   dryRun = false,
 ): Promise<boolean> {
-  // Always probe staged changes (even in dry-run) so we know whether a commit would happen.
-  const diff = await runGitAllowFail(['diff', '--cached', '--quiet'], { cwd })
-  const hasStaged = diff.code !== 0
+  let shouldCommit: boolean
 
-  if (!hasStaged) {
-    if (dryRun) {
-      console.log('[dry-run] no staged changes; skipping commit')
+  if (dryRun) {
+    // add -A is skipped in dry-run, so check the working tree for anything
+    // that would become staged (tracked diffs + untracked files).
+    const status = await runGitAllowFail(['status', '--porcelain'], { cwd })
+    shouldCommit = status.stdout.trim().length > 0
+    if (!shouldCommit) {
+      console.log('[dry-run] no changes; skipping commit')
+      return false
     }
-    return false
+  } else {
+    const diff = await runGitAllowFail(['diff', '--cached', '--quiet'], { cwd })
+    shouldCommit = diff.code !== 0
+    if (!shouldCommit) {
+      return false
+    }
   }
 
   await runGit(['commit', '-m', message], { cwd, dryRun })
