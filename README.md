@@ -32,6 +32,16 @@ npm run build
 npm link          # or: npm i -g .
 ```
 
+### Publish to npm
+
+```bash
+npm install          # required — installs typescript for the build step
+npm login
+npm publish --access public
+```
+
+`prepublishOnly` runs `tsc` before packing. If you see exit code 127 / `tsc: not found`, dependencies were not installed (or an `.npmrc` omitted devDependencies — use `npm install --include=dev`).
+
 ## CLI
 
 Always operates on the **current working directory’s** git repository (not the tool install path).
